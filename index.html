@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twarf | Portfolio Développeur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header avec photo de profil et navigation -->
+    <header>
+        <div class="container">
+            <img src="logo_pp.png" alt="Twarf" class="profile-img">
+            <h1>Archie</h1>
+            <p class="tagline">Fondateur de Twent et Développeur chez Kaleron.</p>
+            <nav>
+                <a href="#about">À propos</a>
+                <a href="#skills">Compétences</a>
+                <a href="#projects">Projets</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Section À propos -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2><span class="neon-text">À propos</span></h2>
+            <p>Je fais du front-end depuis 3 ans et du backend/script depuis 2 ans et demi.</p>
+            <div class="social-links">
+                <a href="https://github.com/Archie442" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://discord.gg/HYjj9W2QhZ" target="_blank"><i class="fab fa-discord"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Compétences -->
+    <section id="skills" class="section">
+        <div class="container">
+            <h2><span class="neon-text">Compétences</span></h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <i class="fab fa-python"></i>
+                    <h3>Python (Script)</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-flask"></i>
+                    <h3>Flask (Back-end)</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 55%;"></div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <i class="fab fa-js"></i>
+                    <h3>NodeJS (Electron & Bots Discord)</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 70%;"></div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <i class="fab fa-html5"></i>
+                    <h3>HTML/CSS (Front-end)</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 98%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Projets -->
+    <section id="projects" class="section">
+        <div class="container">
+            <h2><span class="neon-text">Projets</span></h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <img src="logo_bot.png" alt="Projet 1">
+                    <h3>Mon Bot discord</h3>
+                    <p>Mon bot discord personnel avec Discord.js</p>
+                    <a href="#" class="btn">Voir plus</a>
+                </div>
+                <div class="project-card">
+                    <img src="/logo_twent.png" alt="Projet 2">
+                    <h3>Twent</h3>
+                    <p>Mon projet regroupant principalement des mods et serveurs Minecraft</p>
+                    <!-- <a href="#" class="btn">Voir plus</a> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Twarf. Tous droits réservés.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

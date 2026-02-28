@@ -1,0 +1,160 @@
+/* Thème sombre avec accents néon */
+:root {
+    --bg-dark: #121212;
+    --text-light: #e0e0e0;
+    --neon-blue: #00f0ff;
+    --neon-purple: #b300ff;
+    --card-bg: #1e1e1e;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    margin: 0;
+    padding: 0;
+}
+
+/* Animations et effets */
+.neon-text {
+    color: var(--neon-blue);
+    text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-purple);
+}
+
+header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid var(--neon-blue);
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.profile-img:hover {
+    transform: scale(1.05);
+}
+
+nav a {
+    color: var(--text-light);
+    margin: 0 15px;
+    text-decoration: none;
+    position: relative;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--neon-purple);
+    transition: width 0.3s;
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+.section {
+    padding: 4rem 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.skills-grid, .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.skill-card, .project-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.skill-card:hover, .project-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar {
+    background: #333;
+    border-radius: 5px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    height: 10px;
+    border-radius: 5px;
+}
+
+.project-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.btn {
+    display: inline-block;
+    background: var(--neon-blue);
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: var(--neon-purple);
+}
+
+.social-links a {
+    color: var(--text-light);
+    font-size: 24px;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.social-links a:hover {
+    color: var(--neon-blue);
+}
+
+form input, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background: var(--card-bg);
+    color: var(--text-light);
+    border: 1px solid #333;
+}
+
+form button {
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .skills-grid, .projects-grid {
+        grid-template-columns: 1fr;
+    }
+}
