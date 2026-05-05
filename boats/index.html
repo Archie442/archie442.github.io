@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nautica Prestige</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f8f6f2;
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+
+header {
+  padding: 2.5rem 3rem;
+  border-bottom: 1px solid #e0dcd4;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.logo span { font-style: italic; font-weight: 400; color: #8a7d6a; }
+
+.header-sub {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #a89e8e;
+}
+
+/* MOSAIC */
+.mosaic {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 180px;
+  gap: 3px;
+  padding: 3px;
+}
+
+.card:nth-child(1)  { grid-column: span 5; grid-row: span 3; }
+.card:nth-child(2)  { grid-column: span 4; grid-row: span 2; }
+.card:nth-child(3)  { grid-column: span 3; grid-row: span 2; }
+.card:nth-child(4)  { grid-column: span 4; grid-row: span 1; }
+.card:nth-child(5)  { grid-column: span 3; grid-row: span 1; }
+.card:nth-child(6)  { grid-column: span 4; grid-row: span 2; }
+.card:nth-child(7)  { grid-column: span 3; grid-row: span 2; }
+.card:nth-child(8)  { grid-column: span 5; grid-row: span 2; }
+.card:nth-child(9)  { grid-column: span 7; grid-row: span 2; }
+.card:nth-child(10) { grid-column: span 5; grid-row: span 2; }
+.card:nth-child(11) { grid-column: span 4; grid-row: span 3; }
+.card:nth-child(12) { grid-column: span 8; grid-row: span 3; }
+
+.card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: #ccc;
+}
+
+.card-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s ease;
+  filter: brightness(0.8);
+}
+
+.card:hover .card-bg { transform: scale(1.04); filter: brightness(0.9); }
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  /* background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%); */
+}
+
+.card-info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1rem 1.1rem;
+}
+
+.card-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.95rem, 2vw, 1.4rem);
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.card-price {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.06em;
+  margin-top: 0.2rem;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.3s;
+}
+
+.card:hover .card-price { opacity: 1; transform: translateY(0); }
+
+/* MODAL */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.72);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.modal-backdrop.open { display: flex; }
+
+.modal {
+  background: #f8f6f2;
+  width: 100%;
+  max-width: 840px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 52% 48%;
+  position: relative;
+}
+
+.modal-gallery {
+  position: relative;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.modal-viz {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  transition: opacity 0.3s;
+}
+
+.modal-thumbs {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 0.6rem;
+  display: flex;
+  gap: 3px;
+}
+
+.thumb {
+  width: 50px;
+  height: 34px;
+  cursor: pointer;
+  opacity: 0.5;
+  border: 1px solid transparent;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.thumb:hover, .thumb.active { opacity: 1; border-color: rgba(255,255,255,0.7); }
+
+.modal-body {
+  padding: 1.8rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #e0dcd4;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.6rem; right: 0.6rem;
+  width: 30px; height: 30px;
+  background: rgba(255,255,255,0.88);
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal-close:hover { background: #fff; color: #111; }
+
+.m-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.15;
+  margin-bottom: 0.2rem;
+}
+
+.m-model {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #a89e8e;
+  margin-bottom: 1.3rem;
+}
+
+.m-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.45rem;
+  margin-bottom: 1.3rem;
+  padding-bottom: 1.3rem;
+  border-bottom: 1px solid #e0dcd4;
+}
+
+.sw-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #a89e8e;
+  margin-bottom: 0.5rem;
+}
+
+.swatches { display: flex; gap: 6px; margin-bottom: 0.4rem; }
+
+.swatch {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  outline: 1px solid rgba(0,0,0,0.12);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.swatch:hover { transform: scale(1.15); }
+.swatch.active { border-color: #1a1a1a; transform: scale(1.15); }
+
+.sw-name {
+  font-size: 0.7rem;
+  color: #8a7d6a;
+  min-height: 1em;
+  margin-bottom: 1.3rem;
+}
+
+.specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: #e0dcd4;
+  border: 1px solid #e0dcd4;
+  margin-bottom: 1.3rem;
+}
+
+.spec { background: #f8f6f2; padding: 0.55rem 0.7rem; }
+.spec-l { font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: #a89e8e; margin-bottom: 0.12rem; }
+.spec-v { font-size: 0.8rem; color: #1a1a1a; }
+
+.m-desc {
+  font-size: 0.76rem;
+  line-height: 1.8;
+  color: #6b6258;
+  flex: 1;
+  margin-bottom: 1.3rem;
+}
+
+.btn {
+  display: block; width: 100%;
+  padding: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-dark { background: #1a1a1a; color: #f8f6f2; margin-bottom: 0.4rem; }
+.btn-dark:hover { background: #2e2e2e; }
+.btn-light { background: transparent; color: #1a1a1a; border: 1px solid #c8c0b4; }
+.btn-light:hover { border-color: #1a1a1a; }
+
+footer {
+  padding: 1.8rem 3rem;
+  border-top: 1px solid #e0dcd4;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  color: #a89e8e;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  header { padding: 1.5rem; flex-direction: column; gap: 0.4rem; }
+  .mosaic { grid-template-columns: 1fr 1fr; grid-auto-rows: 170px; }
+  .card:nth-child(n) { grid-column: span 1; grid-row: span 1; }
+  .card:nth-child(1), .card:nth-child(9), .card:nth-child(12) { grid-column: span 2; }
+  .modal { grid-template-columns: 1fr; }
+  .modal-gallery, .modal-viz { min-height: 240px; }
+  .modal-body { border-left: none; border-top: 1px solid #e0dcd4; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Archie <span>Boats</span></div>
+  <div class="header-sub">Site RP Minecraft</div>
+</header>
+
+<div class="mosaic" id="mosaic"></div>
+
+<div class="modal-backdrop" id="backdrop" onclick="bgClose(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-gallery">
+      <div class="modal-viz" id="viz"></div>
+      <div class="modal-thumbs" id="thumbs"></div>
+    </div>
+    <div class="modal-body">
+      <div class="m-name" id="mName"></div>
+      <div class="m-model" id="mModel"></div>
+      <div class="m-price" id="mPrice"></div>
+      <div class="sw-label">Coloris</div>
+      <div class="swatches" id="mSwatches"></div>
+      <div class="sw-name" id="mSwName"></div>
+      <div class="specs" id="mSpecs"></div>
+      <div class="m-desc" id="mDesc"></div>
+      <button class="btn btn-dark">Demander un devis</button>
+      <button class="btn btn-light">Prendre rendez-vous</button>
+    </div>
+  </div>
+</div>
+
+<footer>© 2025 Nautica Prestige — +33 5 46 00 00 00</footer>
+
+<script>
+const boats = [
+  { name:"Archie A545-100", model:"Croisière", price:"EM. 750/h",
+    desc:"Modèle permettant d'accueillir jusqu'à 12 personnes à son bord, l'Archie A545-100 est idéal pour des sorties en mer en famille ou entre amis. Son design élégant et ses équipements modernes garantissent une expérience de navigation confortable et sécurisée.",
+    specs:[{l:"Longueur / Profondeur",v:"21b / 3b"},{l:"Motorisation",v:"ArMotor's 256tr x3+2 (Marche arrière)"},{l:"Capacité",v:"12 pers."},{l:"Année",v:"2026"}],
+    colors:[{n:"Blanc Ivoire",h:"#F5F0E8"}],
+    bg:"linear-gradient(160deg,#0d2a4a,#1a3a5c,#2d6a9f)" },
+  { name:"Archie A505-100", model:"Sport", price:"EM. 1020/h",
+    desc:"L'Archie A505-100 est un bateau de sport compact et agile, conçu pour les amateurs de sensations fortes en mer. Avec sa motorisation puissante et son design aérodynamique, il offre des performances exceptionnelles pour des sorties rapides et dynamiques.",
+    specs:[{l:"Longueur / Profondeur",v:"8b / 1.5b"},{l:"Motorisation",v:"ArMotor's 225tr x2 (Pas de marche arrière)"},{l:"Vitesse max",v:"38 nœuds"},{l:"Capacité",v:"2 pers."}],
+    colors:[{n:"Rouge Corail",h:"#C04040"}],
+    bg:"linear-gradient(135deg,#112240,#0d2a4a,#1a3a5c)" },
+//   { name:"Horizon X72", model:"Mega Yacht", price:"€ 1 850 000",
+//     desc:"L'Horizon X72 représente le summum de l'art nautique. Ce mega-yacht offre six cabines somptueuses, un salon panoramique et une terrasse de bain de soleil sur le roof.",
+//     specs:[{l:"Longueur",v:"22 m"},{l:"Motorisation",v:"2×1000 ch"},{l:"Croisière",v:"28 nœuds"},{l:"Passagers",v:"12"}],
+//     colors:[{n:"Blanc Glacier",h:"#EEF0F2"},{n:"Champagne",h:"#C8A84B"},{n:"Noir Onyx",h:"#2C2C2A"}],
+//     bg:"linear-gradient(180deg,#050e1c,#0a1628,#112240)" },
+//   { name:"Zodiac Pro 5.5", model:"Semi-rigide", price:"€ 28 500",
+//     desc:"Robuste et polyvalent, le Zodiac Pro 5.5 est la référence des professionnels et des plaisanciers actifs. Sa coque aluminium et ses boudinages Hypalon garantissent une durabilité exceptionnelle.",
+//     specs:[{l:"Longueur",v:"5.5 m"},{l:"Motorisation",v:"115 ch"},{l:"Charge utile",v:"800 kg"},{l:"Homologation",v:"10 pers."}],
+//     colors:[{n:"Gris Anthracite",h:"#404550"},{n:"Bleu Navy",h:"#1E2D4A"},{n:"Orange Sécurité",h:"#D96020"}],
+//     bg:"linear-gradient(120deg,#0a1628,#1a3a5c)" },
+//   { name:"Bénéteau 44", model:"Voilier Croisière", price:"€ 195 000",
+//     desc:"Confort et performance se conjuguent dans ce voilier de croisière hauturière. La carène à bulbe offre stabilité et vitesse exceptionnelles pour des passages hauturiers en toute sérénité.",
+//     specs:[{l:"Longueur",v:"13.4 m"},{l:"Tirant d'eau",v:"1.95 m"},{l:"Voilure",v:"95 m²"},{l:"Cabines",v:"3+1"}],
+//     colors:[{n:"Blanc Mat",h:"#F2EEE8"},{n:"Bleu Horizon",h:"#2B5F8C"},{n:"Vert Mer",h:"#2A5C4E"}],
+//     bg:"linear-gradient(150deg,#0d2a4a,#2d6a9f)" },
+//   { name:"Sunseeker 65", model:"Sport Yacht", price:"€ 890 000",
+//     desc:"L'élégance britannique au service de la performance. Le Sunseeker 65 combine des lignes racées et des finitions luxueuses dignes des plus grands yachts de plaisance mondiale.",
+//     specs:[{l:"Longueur",v:"19.8 m"},{l:"Motorisation",v:"2×1074 ch"},{l:"Vitesse max",v:"42 nœuds"},{l:"Cabines VIP",v:"4"}],
+//     colors:[{n:"Blanc Pur",h:"#F8F5F0"},{n:"Gris Platine",h:"#8A9298"},{n:"Bleu Saphir",h:"#1C3666"},{n:"Noir Profond",h:"#18181E"}],
+//     bg:"linear-gradient(170deg,#0a1628,#112240,#1a3a5c)" },
+//   { name:"RS Sailing 700", model:"Dériveur Racing", price:"€ 14 900",
+//     desc:"Le RS 700 est un dériveur skiff asymétrique de haute performance. Sa conception en fibre de carbone le rend extrêmement réactif pour des sensations de navigation incomparables.",
+//     specs:[{l:"Longueur",v:"4.7 m"},{l:"Poids",v:"76 kg"},{l:"Voile principale",v:"10 m²"},{l:"Spinnaker",v:"21 m²"}],
+//     colors:[{n:"Rouge Racing",h:"#CC2222"},{n:"Bleu Course",h:"#1A44A8"},{n:"Jaune Vif",h:"#E8B800"}],
+//     bg:"linear-gradient(140deg,#1a3a5c,#2d6a9f,#1a3a5c)" },
+//   { name:"Jeanneau Cap 43", model:"Day Cruiser", price:"€ 142 000",
+//     desc:"Le Cap 43 est un day-cruiser au style contemporain affirmé. Ses lignes sportives et son vaste cockpit en font le compagnon idéal pour des sorties en famille ou entre amis.",
+//     specs:[{l:"Longueur",v:"13.1 m"},{l:"Motorisation",v:"2×260 ch"},{l:"Vitesse",v:"34 nœuds"},{l:"Couchettes",v:"4"}],
+//     colors:[{n:"Blanc Nacré",h:"#F0EBE0"},{n:"Anthracite",h:"#383C44"},{n:"Bordeaux",h:"#6C1C2C"}],
+//     bg:"linear-gradient(125deg,#112240,#0d2a4a,#1a3a5c)" },
+//   { name:"Princess Y72", model:"Flybridge Luxury", price:"€ 2 100 000",
+//     desc:"Un chef-d'œuvre d'ingénierie navale britannique. Le Princess Y72 offre un volume habitable hors du commun avec un salon principal lumineux et cinq cabines dotées de salles de bains privatives.",
+//     specs:[{l:"Longueur",v:"21.5 m"},{l:"Motorisation",v:"2×1350 ch"},{l:"Croisière",v:"26 nœuds"},{l:"Cabines",v:"5"}],
+//     colors:[{n:"Blanc Alpine",h:"#F0EDE8"},{n:"Gris Yacht",h:"#708090"},{n:"Bleu Minuit",h:"#141E30"}],
+//     bg:"linear-gradient(165deg,#050e1c,#0a1628,#112240,#0d2a4a)" },
+//   { name:"Quicksilver 755", model:"Weekend Cruiser", price:"€ 68 000",
+//     desc:"Parfait pour les escapades du week-end, le Quicksilver 755 combine une cabine confortable pour deux personnes avec un cockpit bien aménagé et un moteur Mercury 200 ch très dynamique.",
+//     specs:[{l:"Longueur",v:"7.6 m"},{l:"Motorisation",v:"Mercury 200 ch"},{l:"Vitesse",v:"45 nœuds"},{l:"Couchettes",v:"2"}],
+//     colors:[{n:"Blanc Glacier",h:"#F4F1EC"},{n:"Gris Métal",h:"#7A8490"},{n:"Bleu Ocean",h:"#204070"}],
+//     bg:"linear-gradient(135deg,#0d2a4a,#2d6a9f)" },
+//   { name:"Sea Ray SLX 400", model:"Bowrider Premium", price:"€ 385 000",
+//     desc:"L'expression ultime du plaisir nautique. Le Sea Ray SLX 400 est un bowrider de luxe qui repousse les limites du genre avec ses finitions artisanales et ses équipements haut de gamme.",
+//     specs:[{l:"Longueur",v:"12.2 m"},{l:"Motorisation",v:"2×400 ch"},{l:"Vitesse max",v:"52 nœuds"},{l:"Capacité",v:"14 pers."}],
+//     colors:[{n:"Blanc Diamant",h:"#F5F3EE"},{n:"Bleu Atlantique",h:"#1C3C6E"},{n:"Graphite",h:"#3C4048"},{n:"Bordeaux",h:"#5C1C28"}],
+//     bg:"linear-gradient(180deg,#0a1628,#0d2a4a,#1a3a5c)" },
+//   { name:"Lagoon 630", model:"Catamaran de Luxe", price:"€ 1 250 000",
+//     desc:"Le Lagoon 630 incarne la villa flottante par excellence. Son architecture ouvre d'immenses volumes habitables sur deux coques avec un salon-pont panoramique et six cabines d'une grande sérénité.",
+//     specs:[{l:"Longueur",v:"19.2 m"},{l:"Largeur",v:"10.2 m"},{l:"Tirant d'eau",v:"1.40 m"},{l:"Cabines",v:"6+1"}],
+//     colors:[{n:"Blanc Voile",h:"#F8F5EE"},{n:"Bleu Caraïbes",h:"#1E5C8C"},{n:"Sable Doré",h:"#C8AA70"}],
+//     bg:"linear-gradient(140deg,#0a1628,#112240,#1a3a5c,#2d6a9f)" }
+];
+
+const altBgs = [
+  b => b,
+  _ => "linear-gradient(200deg,#0d2a4a,#2d6a9f,#1a3a5c)",
+  _ => "linear-gradient(90deg,#1a3a5c,#0a1628,#2d6a9f)",
+  _ => "linear-gradient(270deg,#112240,#2d6a9f,#050e1c)"
+];
+
+// Build mosaic
+const mosaic = document.getElementById('mosaic');
+boats.forEach(b => {
+  const c = document.createElement('div');
+  c.className = 'card';
+  c.innerHTML = `<div class="card-bg" style="background:${b.bg}"></div><div class="card-overlay"></div><div class="card-info"><div class="card-name">${b.name}</div><div class="card-price">${b.price}</div></div>`;
+  c.addEventListener('click', () => open(b));
+  mosaic.appendChild(c);
+});
+
+let cur = null;
+
+function open(b) {
+  cur = b;
+  document.getElementById('mName').textContent = b.name;
+  document.getElementById('mModel').textContent = b.model;
+  document.getElementById('mPrice').textContent = b.price;
+  document.getElementById('mDesc').textContent = b.desc;
+  document.getElementById('mSpecs').innerHTML = b.specs.map(s => `<div class="spec"><div class="spec-l">${s.l}</div><div class="spec-v">${s.v}</div></div>`).join('');
+  document.getElementById('mSwatches').innerHTML = b.colors.map((c,i) => `<div class="swatch${i?'':' active'}" style="background:${c.h}" onclick="pickColor(${i})" title="${c.n}"></div>`).join('');
+  document.getElementById('mSwName').textContent = b.colors[0].n;
+  const viz = document.getElementById('viz');
+  viz.style.background = b.bg;
+  document.getElementById('thumbs').innerHTML = altBgs.map((fn,i) => `<div class="thumb${i?'':' active'}" style="background:${fn(b.bg)}" onclick="pickThumb(${i},this)"></div>`).join('');
+  document.getElementById('backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function pickColor(i) {
+  document.querySelectorAll('.swatch').forEach((s,j) => s.classList.toggle('active', i===j));
+  document.getElementById('mSwName').textContent = cur.colors[i].n;
+  const v = document.getElementById('viz');
+  v.style.opacity = '0';
+  setTimeout(() => v.style.opacity = '1', 280);
+}
+
+function pickThumb(i, el) {
+  document.querySelectorAll('#thumbs .thumb').forEach(t => { t.classList.remove('active'); t.style.opacity='0.5'; t.style.borderColor='transparent'; });
+  el.classList.add('active'); el.style.opacity='1'; el.style.borderColor='rgba(255,255,255,0.7)';
+  const v = document.getElementById('viz');
+  v.style.opacity = '0';
+  setTimeout(() => { v.style.background = altBgs[i](cur.bg); v.style.opacity = '1'; }, 200);
+}
+
+function closeModal() { document.getElementById('backdrop').classList.remove('open'); document.body.style.overflow = ''; }
+function bgClose(e) { if (e.target === document.getElementById('backdrop')) closeModal(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
