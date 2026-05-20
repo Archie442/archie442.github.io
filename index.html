@@ -1,109 +1,178 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archie</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="/logo_pp.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Archie — Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-    <!-- Header avec photo de profil et navigation -->
-    <header>
-        <div class="container">
-            <img src="logo_pp.png" alt="Twarf" class="profile-img" onclick="window.location.href='/'">
-            <h1>Archie</h1>
-            <p class="tagline">Fondateur de Twent et Développeur chez Kaleron.</p>
-            <nav>
-                <a href="#about">À propos</a>
-                <a href="#skills">Compétences</a>
-                <a href="#projects">Projets</a>
-            </nav>
-        </div>
-    </header>
 
-    <!-- Section À propos -->
-    <section id="about" class="section">
-        <div class="container">
-            <h2><span class="neon-text">À propos</span></h2>
-            <p>Salut ! Je suis Archie et je fais principalement du front-end pour des sites web. Je fais également un peu de back-end (Flask/nodejs) et du script (python). Je suis actuellement en apprentissage du language Java.</p>
-            <div class="social-links">
-                <a href="https://github.com/Archie442" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://discord.gg/HYjj9W2QhZ" target="_blank"><i class="fab fa-discord"></i></a>
-            </div>
+  <div class="noise"></div>
+
+  <main class="bento-grid">
+
+    <!-- PRESENTATION -->
+    <section class="card presentation">
+
+      <div class="top-bar">
+        <div class="status">
+          <span class="dot"></span>
+          <p>Ouvert à la discussion pour la collaboration à but non-lucratif.</p>
         </div>
+
+        <span class="mini-badge">Développeur Full-Stack 🇫🇷</span>
+      </div>
+
+      <div class="presentation-content">
+        <h1>
+          Archie
+        </h1>
+
+        <p>
+          Je suis développeur prinicipalement orienté web pour la création d'applications (full-stack) ou frontend.
+        </p>
+      </div>
+
     </section>
 
-    <!-- Section Compétences -->
-    <section id="skills" class="section">
-        <div class="container">
-            <h2><span class="neon-text">Compétences</span></h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <i class="fab fa-python"></i>
-                    <h3>Python (Script)</h3>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 70%;"></div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-flask"></i>
-                    <h3>Flask (Back-end)</h3>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 55%;"></div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-js"></i>
-                    <h3>NodeJS (Electron & Bots Discord)</h3>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 70%;"></div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-html5"></i>
-                    <h3>HTML/CSS (Front-end)</h3>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 98%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- SKILLS -->
+    <section class="card skills">
+
+      <div class="section-head">
+        <span class="section-number">01</span>
+        <h2>Compétences</h2>
+      </div>
+
+      <div class="skills-grid">
+
+        <div class="skill-tag">Python 3</div>
+        <div class="skill-tag">Flask</div>
+        <div class="skill-tag">HTML/CSS/JS</div>
+        <div class="skill-tag">Discord.py</div>
+        <div class="skill-tag">Node.js</div>
+
+      </div>
+
     </section>
 
-    <!-- Section Projets -->
-    <section id="projects" class="section">
-        <div class="container">
-            <h2><span class="neon-text">Projets</span></h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <img src="logo_bot.png" alt="Projet 1">
-                    <h3>Mon Bot discord</h3>
-                    <p>Mon bot discord personnel avec Discord.js</p>
-                    <a href="https://dsc.gg/Archielevrai" class="btn">Voir plus (Discord)</a>
-                </div>
-                <div class="project-card">
-                    <img src="/logo_twent.png" alt="Projet 2">
-                    <h3>Twent</h3>
-                    <p>Mon projet regroupant principalement des mods et serveurs Minecraft</p>
-                    <a href="https://modrinth.com/user/TwentGames" class="btn">Voir plus (Modrinth)</a>
-                </div>
-            </div>
+    <!-- EXPERIENCE -->
+    <section class="card experience">
+
+      <div class="section-head">
+        <span class="section-number">02</span>
+        <h2>Experience</h2>
+      </div>
+
+      <div class="timeline">
+
+
+        <div class="timeline-item">
+          <div class="timeline-left">
+            <span>Depuis 2025</span>
+          </div>
+
+          <div class="timeline-right">
+            <h3>Dev Full-Stack</h3>
+            <p>Je m'entraine sur des projets solos non-déployés pour me perfectionner et/ou je participe à des projets d'amis ou de connaissances pour les aider.</p>
+          </div>
         </div>
+
+        <div class="timeline-item">
+          <div class="timeline-left">
+            <span>Depuis 2024</span>
+          </div>
+
+          <div class="timeline-right">
+            <h3>Dev Minecraft</h3>
+            <p>Je crée des petits mods de A à Z et j'aide à la configuration et au déployement de serveurs autres pour asister.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-left">
+            <span>Depuis 2024</span>
+          </div>
+
+          <div class="timeline-right">
+            <h3>Dev Frontend</h3>
+            <p>Je fais des sites frontend un peu plus beau pour des gens qui en ont besoin de manière gratuite.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-left">
+            <span>2023-2024</span>
+          </div>
+
+          <div class="timeline-right">
+            <h3>Dev Solo</h3>
+            <p>Mes débuts en code, rien d'extra-ordinaire; seulement quelques projets de débutant sans aboutissement.</p>
+          </div>
+        </div>
+
+      </div>
+
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <center>
-            <p>© 2026 Archie. Tous droits réservés.</p> <br>
-            <p>Liens:</p>
-            <a href="https://dsc.gg/archielevrai">Discord</a>
-            <a href="https://github.com/archie442">Github</a>
-        </center>
+    <!-- CONTACT -->
+    <section class="card contact">
 
-    </footer>
+      <div class="section-head">
+        <span class="section-number">03</span>
+        <h2>Contact</h2>
+      </div>
 
-    <script src="script.js"></script>
+      <div class="contact-buttons">
+
+        <a href="https://tally.so/r/vGJo6l">
+          <span>Tally</span>
+          <span>↗</span>
+        </a>
+
+        <a href="https://dsc.gg/archielevrai">
+          <span>Discord</span>
+          <span>↗</span>
+        </a>
+
+        <a href="mailto:hello.twarf@proton.me">
+          <span>Email</span>
+          <span>↗</span>
+        </a>
+
+      </div>
+
+    </section>
+
+    <!-- LINKS -->
+    <section class="card links">
+
+      <div class="section-head">
+        <span class="section-number">04</span>
+        <h2>Links</h2>
+      </div>
+
+      <div class="links-grid">
+
+        <a href="https://github.com/archielevrai">GitHub</a>
+
+      </div>
+
+    </section>
+
+  </main>
+
 </body>
 </html>
