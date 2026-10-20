@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Minecraft Map Finder</title>
+<style>
+  :root{color-scheme:dark;--bg:#11151b;--panel:#1b222c;--panel2:#242d39;--line:#354151;--text:#eef3f8;--muted:#9eacbd;--accent:#65d48b;--gold:#e9c46a}
+  *{box-sizing:border-box}
+  html,body{height:100%;width:100%;margin:0;overflow:hidden}
+  body{font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  .app{height:100dvh;min-height:0;display:grid;grid-template-rows:minmax(0,1fr)}
+  main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:12px;padding:12px}
+  .map-panel,.side{min-height:0;min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+  .map-panel{display:grid;grid-template-rows:44px minmax(0,1fr) 34px}
+  .panel-head{display:flex;align-items:center;gap:8px;padding:0 13px;border-bottom:1px solid var(--line);font-weight:700}
+  .panel-head small{margin-left:auto;color:var(--muted);font-weight:500}
+  .map-stage{position:relative;min-height:0;overflow:hidden;display:grid;place-items:center;background-color:#131920;background-image:linear-gradient(45deg,#18202a 25%,transparent 25%),linear-gradient(-45deg,#18202a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#18202a 75%),linear-gradient(-45deg,transparent 75%,#18202a 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}
+  #mapWrap{position:relative;max-width:100%;max-height:100%;line-height:0}
+  #mapImage{display:block;max-width:100%;max-height:calc(100dvh - 160px);width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none}
+  #markers{position:absolute;inset:0;pointer-events:none}
+  .cabinet{position:absolute;transform:translate(-50%,-50%);width:3.1%;height:10.1%;min-width:22px;min-height:42px;border:2px solid transparent;border-radius:999px;background:transparent;color:transparent;cursor:pointer;pointer-events:auto;z-index:2}
+  .cabinet:hover{border-color:#ffffff88;background:#ffffff12}
+  .cabinet.active{border-color:#ffe16b;background:#ffe16b44;box-shadow:0 0 0 5px #ffe16b35,0 0 24px #ffe16b;z-index:4}
+  .cabinet .cabinet-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:#fff;background:#151923dd;border:1px solid #ffffff55;border-radius:5px;padding:2px 5px;white-space:nowrap;opacity:0}
+  .cabinet.active .cabinet-label,.cabinet:hover .cabinet-label{opacity:1}
+  .marker{position:absolute;transform:translate(-50%,-50%);width:25px;height:25px;border-radius:50%;border:2px solid #fff;background:#d94f4f;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800;box-shadow:0 2px 8px #000a;pointer-events:auto;cursor:pointer;padding:0}
+  .marker.active{background:var(--gold);color:#1a1a1a;z-index:3;transform:translate(-50%,-50%) scale(1.2)}
+  .map-foot{display:flex;align-items:center;padding:0 12px;color:var(--muted);font-size:11px;border-top:1px solid var(--line);gap:12px}
+  .map-foot span:last-child{margin-left:auto}
+  .side{display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+  .search-area{padding:15px;border-bottom:1px solid var(--line)}
+  .search-area h2{font-size:15px;margin:0 0 4px}
+  .hint{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .searchbox{display:flex;align-items:center;gap:8px;background:#10151b;border:1px solid #465366;border-radius:8px;padding:0 10px}
+  .searchbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px #65d48b22}
+  .searchbox span{font-size:17px;color:var(--muted)}
+  #search{width:100%;height:42px;background:transparent;border:0;outline:0;color:var(--text);font:inherit}
+  #search::placeholder{color:#778699}
+  .results{overflow:auto;min-height:0;padding:8px;scrollbar-width:thin;scrollbar-color:#465366 transparent}
+  .result{width:100%;display:flex;align-items:center;gap:11px;text-align:left;padding:9px;border:1px solid transparent;border-radius:9px;background:transparent;color:inherit;cursor:pointer}
+  .result:hover,.result.selected{background:var(--panel2);border-color:#465366}
+  .item-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;background:#11171e;border:1px solid #303b49;border-radius:7px}
+  .item-icon img{width:32px;height:32px;image-rendering:pixelated;object-fit:contain}
+  .item-icon .fallback{font-size:22px}
+  .item-info{min-width:0;flex:1}
+  .item-name{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item-id{display:block;font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+  .coords{font-size:11px;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .empty{padding:22px 12px;text-align:center;color:var(--muted);font-size:13px}
+  .details{padding:13px 15px;border-top:1px solid var(--line);background:#171d25}
+  .details-top{display:flex;align-items:center;gap:10px}
+  .details h3{font-size:14px;margin:0}
+  .details p{font-size:12px;color:var(--muted);margin:4px 0 0}
+  .coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .coord{background:#10151b;border:1px solid var(--line);border-radius:7px;padding:7px 9px}
+  .coord label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.8px}
+  .coord strong{font-size:15px;font-variant-numeric:tabular-nums}
+  .status{font-size:11px;color:var(--muted)}
+  .status.error{color:#ff9696}
+  .status.ok{color:var(--accent)}
+  @media(max-width:760px){
+    .app{grid-template-rows:minmax(0,1fr)}
+    main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(190px,36%);gap:8px;padding:8px}
+    .map-panel{grid-row:1}.side{grid-row:2;grid-template-rows:auto minmax(0,1fr)}
+    .search-area{padding:9px 11px}.search-area h2{display:inline;margin-right:8px}.hint{display:none}
+    #search{height:36px}.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:3px;padding:5px}
+    .result{padding:5px;gap:6px}.item-icon{width:32px;height:32px;flex-basis:32px}.item-icon img{width:25px;height:25px}.coords{display:none}
+    .details{display:none}.map-panel{grid-template-rows:35px minmax(0,1fr) 25px}
+    #mapImage{max-height:calc(64dvh - 90px)}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <main>
+    <section class="map-panel">
+      <div class="panel-head">🗺️ <span>Plan du StarkShop</span><small id="markerCount">Chargement…</small></div>
+      <div class="map-stage" id="mapStage">
+        <div id="mapWrap"><img id="mapImage" src="plan.png" alt="Plan Minecraft"><div id="markers"></div><div id="cabinets" aria-label="Armoires"></div></div>
+      </div>
+      <div class="map-foot"><span>● Sélectionné</span><span>Les marqueurs utilisent les coordonnées du JSON</span></div>
+    </section>
+    <aside class="side">
+      <div class="search-area">
+        <h2>Rechercher un item</h2>
+        <p class="hint">Tape un nom, en français ou en anglais, ou un ID Minecraft.</p>
+        <label class="searchbox"><span>⌕</span><input id="search" type="search" placeholder="Ex. diamant, coffre, épée…" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <div class="results" id="results"><div class="empty">Chargement de items.json…</div></div>
+      <section class="details" id="details">
+        <div class="details-top"><div class="item-icon"><span class="fallback">📍</span></div><div><h3>Aucun item sélectionné</h3><p>Choisis un résultat pour afficher sa position.</p></div></div>
+      </section>
+    </aside>
+  </main>
+</div>
+<script>
+(() => {
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const search = $("#search"), results = $("#results"), markers = $("#markers"), cabinetsLayer = $("#cabinets");
+  const mapImage = $("#mapImage"), mapWrap = $("#mapWrap");
+  let items = [], selectedId = null;
+
+  const slug = value => String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_:-]+/g," ");
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const textureUrls = id => {
+    const clean = String(id || "").replace(/^minecraft:/,"");
+    const v = "1.21.11";
+    return [
+      `https://assets.mcasset.cloud/${v}/assets/minecraft/textures/item/${clean}.png`,
+      `https://assets.mcasset.cloud/${v}/assets/minecraft/textures/block/${clean}.png`,
+      `https://raw.githubusercontent.com/PrismarineJS/minecraft-assets/master/data/1.21.11/items/${clean}.png`
+    ];
+  };
+  function textureMarkup(item) {
+    const urls = textureUrls(item.texture || item.id);
+    return `<img alt="" loading="lazy" src="${urls[0]}" data-fallbacks="${esc(JSON.stringify(urls.slice(1)))}" onerror="textureFallback(this)">`;
+  }
+  window.textureFallback = img => {
+    let urls = [];
+    try { urls = JSON.parse(img.dataset.fallbacks || "[]"); } catch {}
+    if (urls.length) { img.dataset.fallbacks = JSON.stringify(urls.slice(1)); img.src = urls[0]; }
+    else { img.style.display = "none"; if (!img.parentElement.querySelector(".fallback")) img.insertAdjacentHTML("afterend",'<span class="fallback">🧱</span>'); }
+  };
+  function getCoords(item) {
+    if (item.x != null && item.z != null) return {x:Number(item.x),z:Number(item.z)};
+    if (item.coords && item.coords.x != null && item.coords.z != null) return {x:Number(item.coords.x),z:Number(item.coords.z)};
+    return null;
+  }
+  const cabinetPositions = (() => {
+    const p = {};
+    // Pourcentages mesurés sur plan.png (2048 × 2048) : A5 en haut à droite,
+    // A1 en bas à droite, B5 en haut à gauche, B1 en bas à gauche.
+    const ys = [29.5, 40.3, 51.1, 61.9, 72.6];
+    for (let i = 0; i < 5; i++) {
+      p[`A${5-i}`] = {left:85.3, top:ys[i]};
+      p[`B${5-i}`] = {left:14.6, top:ys[i]};
+    }
+    return p;
+  })();
+  function getCabinets(item) {
+    if (Array.isArray(item.cabinet)) return item.cabinet.filter(Boolean).map(String);
+    return item.cabinet ? [String(item.cabinet)] : [];
+  }
+  function renderMarkers() {
+    markers.innerHTML = "";
+    cabinetsLayer.innerHTML = "";
+    const used = new Set(items.flatMap(getCabinets));
+    Object.entries(cabinetPositions).forEach(([name, pos]) => {
+      const b = document.createElement("button");
+      b.className = "cabinet" + (items.some(i => i.id === selectedId && getCabinets(i).includes(name)) ? " active" : "");
+      b.style.left = pos.left + "%";
+      b.style.top = pos.top + "%";
+      b.title = `Armoire ${name}`;
+      b.setAttribute("aria-label", `Armoire ${name}`);
+      b.innerHTML = `<span class="cabinet-label">${name}</span>`;
+      b.addEventListener("click", () => {
+        const first = items.find(i => getCabinets(i).includes(name));
+        if (first) selectItem(first.id, false);
+        else {
+          cabinetsLayer.querySelectorAll(".cabinet").forEach(el => el.classList.remove("active"));
+          b.classList.add("active");
+        }
+      });
+      cabinetsLayer.appendChild(b);
+    });
+    $("#markerCount").textContent = `${used.size} armoires utilisées`;
+  }
+  function renderResults() {
+    const q = slug(search.value.trim());
+    const matches = items.filter(item => !q || slug([item.name,item.id,item.displayName,...(item.aliases || [])].join(" ")).includes(q)).slice(0,100);
+    if (!matches.length) { results.innerHTML = '<div class="empty">Aucun item trouvé.<br>Vérifie son nom dans items.json.</div>'; return; }
+    results.innerHTML = matches.map(item => {
+      const c = getCoords(item);
+      return `<button class="result ${item.id===selectedId?"selected":""}" data-id="${esc(item.id)}">
+        <span class="item-icon">${textureMarkup(item)}</span>
+        <span class="item-info"><span class="item-name">${esc(item.name || item.displayName || item.id)}</span><span class="item-id">${esc(item.id)}</span></span>
+        <span class="coords">${getCabinets(item).length ? `${esc(getCabinets(item).join(", "))}<br>Coffre ${esc(item.chest ?? "—")}` : "Sans armoire"}</span>
+      </button>`;
+    }).join("");
+    results.querySelectorAll(".result").forEach(btn => btn.addEventListener("click",() => selectItem(btn.dataset.id,true)));
+  }
+  function selectItem(id, focusMap) {
+    const item = items.find(x => x.id === id);
+    if (!item) return;
+    selectedId = id;
+    renderResults(); renderMarkers();
+    const icon = textureMarkup(item);
+    $("#details").innerHTML = `<div class="details-top"><div class="item-icon">${icon}</div><div><h3>${esc(item.name || item.displayName || item.id)}</h3><p>${esc(item.id)}</p></div></div>
+      <div class="coord-grid"><div class="coord"><label>Armoire${getCabinets(item).length > 1 ? "s" : ""}</label><strong>${esc(getCabinets(item).join(", ") || "—")}</strong></div><div class="coord"><label>Numéro du coffre</label><strong>${esc(item.chest ?? "—")}</strong></div></div>`;
+    renderMarkers();
+    if (focusMap && getCabinets(item).length) {
+      const cabinet = [...cabinetsLayer.children].find(el => el.title === `Armoire ${getCabinets(item)[0]}`);
+      if (cabinet) cabinet.focus({preventScroll:true});
+    }
+  }
+  function normalizeData(data) {
+    if (Array.isArray(data)) return {items:data,bounds:null};
+    if (data && Array.isArray(data.items)) return {items:data.items,bounds:data.mapBounds || data.bounds || null};
+    throw new Error("Le JSON doit être un tableau d’items ou un objet contenant items: [].");
+  }
+  async function init() {
+    mapImage.addEventListener("error",() => {
+      mapWrap.innerHTML = '<div style="padding:25px;color:#ffb4b4;text-align:center;line-height:1.5">Impossible de charger <b>plan.png</b>.<br>Place le fichier à côté de index.html.</div>';
+    });
+    try {
+      const response = await fetch("items.json", {cache:"no-store"});
+      if (!response.ok) throw new Error(`items.json introuvable (HTTP ${response.status})`);
+      const parsed = normalizeData(await response.json());
+      items = parsed.items.filter(item => item && item.id);
+      $("#details").innerHTML = '<div class="status">Sélectionne un item pour voir son armoire et son coffre.</div>';
+      renderResults(); renderMarkers();
+
+    } catch (error) {
+      results.innerHTML = `<div class="empty status error">${esc(error.message)}<br><br>Place items.json à côté de index.html et lance la page via un serveur local.</div>`;
+      $("#markerCount").textContent = "JSON indisponible";
+    }
+  }
+  search.addEventListener("input",renderResults);
+  mapImage.addEventListener("load",() => { renderMarkers(); });
+  window.addEventListener("resize",renderMarkers);
+  init();
+})();
+</script>
+</body>
+</html>
