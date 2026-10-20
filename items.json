@@ -112,5 +112,19 @@
     "name": "Épée en cuivre",
     "cabinet": "B4",
     "chest": 4
+    },
+
+
+    {
+        "id": "cocoa_beans",
+        "name": "Fèves de cacao",
+        "cabinet": "",
+        "chest": 2
+    },
+    {
+        "id": "cookie",
+        "name": "Cookie",
+        "cabinet": "",
+        "chest": 2
     }
 ]

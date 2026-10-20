@@ -40,6 +40,9 @@
   .results{overflow:auto;min-height:0;padding:8px;scrollbar-width:thin;scrollbar-color:#465366 transparent}
   .result{width:100%;display:flex;align-items:center;gap:11px;text-align:left;padding:9px;border:1px solid transparent;border-radius:9px;background:transparent;color:inherit;cursor:pointer}
   .result:hover,.result.selected{background:var(--panel2);border-color:#465366}
+  .result.coming-soon{border:1px solid #d69bff;background:linear-gradient(110deg,#6d3a8a22,#24202d);box-shadow:inset 3px 0 0 #d69bff}
+  .result.coming-soon:hover,.result.coming-soon.selected{border-color:#e5baff;background:#633d792e}
+  .coming-badge{display:inline-block;margin-top:4px;padding:2px 6px;border:1px solid #d69bff;border-radius:4px;color:#e5baff;font-size:9px;font-weight:900;letter-spacing:.7px;white-space:nowrap}
   .item-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;background:#11171e;border:1px solid #303b49;border-radius:7px}
   .item-icon img{width:32px;height:32px;image-rendering:pixelated;object-fit:contain}
   .item-icon .fallback{font-size:22px}
@@ -75,7 +78,7 @@
 <div class="app">
   <main>
     <section class="map-panel">
-      <div class="panel-head">🗺️ <span>Plan du StarkShop</span><small id="markerCount">Chargement…</small></div>
+      <div class="panel-head">🗺️ <span>Plan du monde</span><small id="markerCount">Chargement…</small></div>
       <div class="map-stage" id="mapStage">
         <div id="mapWrap"><img id="mapImage" src="plan.png" alt="Plan Minecraft"><div id="markers"></div><div id="cabinets" aria-label="Armoires"></div></div>
       </div>
@@ -139,6 +142,7 @@
     }
     return p;
   })();
+  function isComingSoon(item) { return item.cabinet === "" || (Array.isArray(item.cabinet) && item.cabinet.length === 1 && item.cabinet[0] === ""); }
   function getCabinets(item) {
     if (Array.isArray(item.cabinet)) return item.cabinet.filter(Boolean).map(String);
     return item.cabinet ? [String(item.cabinet)] : [];
@@ -169,14 +173,16 @@
   }
   function renderResults() {
     const q = slug(search.value.trim());
-    const matches = items.filter(item => !q || slug([item.name,item.id,item.displayName,...(item.aliases || [])].join(" ")).includes(q)).slice(0,100);
+    const matches = items.filter(item => !q || slug([item.name,item.id,item.displayName,...(item.aliases || [])].join(" ")).includes(q))
+      .sort((a,b) => Number(isComingSoon(a)) - Number(isComingSoon(b))).slice(0,100);
     if (!matches.length) { results.innerHTML = '<div class="empty">Aucun item trouvé.<br>Vérifie son nom dans items.json.</div>'; return; }
     results.innerHTML = matches.map(item => {
       const c = getCoords(item);
-      return `<button class="result ${item.id===selectedId?"selected":""}" data-id="${esc(item.id)}">
+      const comingSoon = isComingSoon(item);
+      return `<button class="result ${item.id===selectedId?"selected":""} ${comingSoon?"coming-soon":""}" data-id="${esc(item.id)}">
         <span class="item-icon">${textureMarkup(item)}</span>
-        <span class="item-info"><span class="item-name">${esc(item.name || item.displayName || item.id)}</span><span class="item-id">${esc(item.id)}</span></span>
-        <span class="coords">${getCabinets(item).length ? `${esc(getCabinets(item).join(", "))}<br>Coffre ${esc(item.chest ?? "—")}` : "Sans armoire"}</span>
+        <span class="item-info"><span class="item-name">${esc(item.name || item.displayName || item.id)}</span><span class="item-id">${esc(item.id)}</span>${comingSoon?'<span class="coming-badge">BIENTÔT DISPO</span>':""}</span>
+        ${comingSoon?"":`<span class="coords">${getCabinets(item).length ? `${esc(getCabinets(item).join(", "))}<br>Coffre ${esc(item.chest ?? "—")}` : "Sans armoire"}</span>`}
       </button>`;
     }).join("");
     results.querySelectorAll(".result").forEach(btn => btn.addEventListener("click",() => selectItem(btn.dataset.id,true)));
@@ -187,6 +193,10 @@
     selectedId = id;
     renderResults(); renderMarkers();
     const icon = textureMarkup(item);
+    if (isComingSoon(item)) {
+      $("#details").innerHTML = `<div class="details-top"><div class="item-icon">${icon}</div><div><h3>${esc(item.name || item.displayName || item.id)}</h3><p>${esc(item.id)}</p><span class="coming-badge">BIENTÔT DISPO</span></div></div>`;
+      return;
+    }
     $("#details").innerHTML = `<div class="details-top"><div class="item-icon">${icon}</div><div><h3>${esc(item.name || item.displayName || item.id)}</h3><p>${esc(item.id)}</p></div></div>
       <div class="coord-grid"><div class="coord"><label>Armoire${getCabinets(item).length > 1 ? "s" : ""}</label><strong>${esc(getCabinets(item).join(", ") || "—")}</strong></div><div class="coord"><label>Numéro du coffre</label><strong>${esc(item.chest ?? "—")}</strong></div></div>`;
     renderMarkers();
