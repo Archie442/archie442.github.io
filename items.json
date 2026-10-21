@@ -124,7 +124,7 @@
     {
         "id": "cookie",
         "name": "Cookie",
-        "cabinet": "",
-        "chest": 2
+        "cabinet": "B5",
+        "chest": 1
     }
 ]
