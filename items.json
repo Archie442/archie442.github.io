@@ -126,5 +126,11 @@
         "name": "Cookie",
         "cabinet": "B5",
         "chest": 1
+    },
+    {
+        "id": "dirt",
+        "name": "Terre",
+        "cabinet": "A3",
+        "chest": 2
     }
 ]
