@@ -66,8 +66,12 @@
     "cabinet": "D2",
     "chest": 4
     },
-    
-
+    {
+    "id": "nether_wart ",
+    "name": "Verrue du Nether",
+    "cabinet": "A3",
+    "chest": 3
+    },
     {
     "id": "melon_seeds",
     "name": "Graines de melon",
