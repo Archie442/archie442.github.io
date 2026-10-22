@@ -1,5 +1,74 @@
 [
     {
+    "id": "copper_helmet",
+    "name": "Casque en cuivre",
+    "cabinet": "D1",
+    "chest": 4
+    },
+    {
+    "id": "copper_chestplate",
+    "name": "Plastron en cuivre",
+    "cabinet": "D1",
+    "chest": 3
+    },
+    {
+    "id": "copper_leggings",
+    "name": "Jambières en cuivre",
+    "cabinet": "D1",
+    "chest": 2
+    },
+    {
+    "id": "copper_boots",
+    "name": "Bottes en cuivre",
+    "cabinet": "D1",
+    "chest": 1
+    },
+    {
+    "id": "shield ",
+    "name": "Bouclier",
+    "cabinet": "D2",
+    "chest": 3
+    },
+    {
+    "id": "shears",
+    "name": "Cisailles",
+    "cabinet": "D2",
+    "chest": 2
+    },
+    
+    {
+    "id": "iron_axe",
+    "name": "Hache en fer",
+    "cabinet": "D3",
+    "chest": 1
+    },
+    {
+    "id": "iron_hoe",
+    "name": "Houe en fer",
+    "cabinet": "D3",
+    "chest": 3
+    },
+    {
+    "id": "iron_pickaxe",
+    "name": "Pioche en fer",
+    "cabinet": "D3",
+    "chest": 2
+    },
+    {
+    "id": "iron_shovel",
+    "name": "Pelle en fer",
+    "cabinet": "D3",
+    "chest": 4
+    },
+    {
+    "id": "iron_sword",
+    "name": "Épée en fer",
+    "cabinet": "D2",
+    "chest": 4
+    },
+    
+
+    {
     "id": "melon_seeds",
     "name": "Graines de melon",
     "cabinet": "A3",
@@ -57,60 +126,6 @@
     "id": "baked_potato",
     "name": "Patate cuite",
     "cabinet": "B1",
-    "chest": 4
-    },
-    {
-    "id": "copper_axe",
-    "name": "Hache en cuivre",
-    "cabinet": "B2",
-    "chest": 1
-    },
-    {
-    "id": "copper_hoe",
-    "name": "Houe en cuivre",
-    "cabinet": "B2",
-    "chest": 2
-    },
-    {
-    "id": "copper_pickaxe",
-    "name": "Pioche en cuivre",
-    "cabinet": "B2",
-    "chest": 3
-    },
-    {
-    "id": "copper_shovel",
-    "name": "Pelle en cuivre",
-    "cabinet": "B2",
-    "chest": 4
-    },
-    {
-    "id": "copper_chestplate",
-    "name": "Plastron en cuivre",
-    "cabinet": "B3",
-    "chest": 1
-    },
-    {
-    "id": "copper_boots",
-    "name": "Bottes en cuivre",
-    "cabinet": "B3",
-    "chest": 2
-    },
-    {
-    "id": "copper_leggings",
-    "name": "Jambières en cuivre",
-    "cabinet": "B3",
-    "chest": 3
-    },
-    {
-    "id": "copper_helmet",
-    "name": "Casque en cuivre",
-    "cabinet": "B3",
-    "chest": 4
-    },
-    {
-    "id": "copper_sword",
-    "name": "Épée en cuivre",
-    "cabinet": "B4",
     "chest": 4
     },
 

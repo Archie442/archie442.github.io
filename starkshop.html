@@ -57,9 +57,11 @@
     </aside>
   </main>
 </div>
+
 <script>
 (() => {
   "use strict";
+
   const $ = s => document.querySelector(s);
   const search = $("#search"), results = $("#results"), markers = $("#markers"), cabinetsLayer = $("#cabinets");
   const mapImage = $("#mapImage"), mapWrap = $("#mapWrap");
@@ -67,6 +69,7 @@
 
   const slug = value => String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_:-]+/g," ");
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
   const textureUrls = id => {
     const clean = String(id || "").replace(/^minecraft:/,"");
     const v = "1.21.11";
@@ -76,21 +79,44 @@
       `https://raw.githubusercontent.com/PrismarineJS/minecraft-assets/master/data/1.21.11/items/${clean}.png`
     ];
   };
+
   function textureMarkup(item) {
-    const urls = textureUrls(item.texture || item.id);
+    // Essayer les sources en ligne, puis le fichier local /items/{id}.png.
+    // Si toutes échouent, textureFallback affiche le remplacement 🧱 déjà utilisé.
+    const localId = String(item.id || "").replace(/^minecraft:/,"").trim();
+    if (localId === "shield") {
+      return `<img alt="" loading="lazy" src="/items/shield.png" onerror="textureFallback(this)">`;
+    }
+
+    const urls = [
+      ...textureUrls(item.texture || item.id),
+      `/items/${localId}.png`
+    ];
     return `<img alt="" loading="lazy" src="${urls[0]}" data-fallbacks="${esc(JSON.stringify(urls.slice(1)))}" onerror="textureFallback(this)">`;
   }
+
   window.textureFallback = img => {
     let urls = [];
     try { urls = JSON.parse(img.dataset.fallbacks || "[]"); } catch {}
-    if (urls.length) { img.dataset.fallbacks = JSON.stringify(urls.slice(1)); img.src = urls[0]; }
-    else { img.style.display = "none"; if (!img.parentElement.querySelector(".fallback")) img.insertAdjacentHTML("afterend",'<span class="fallback">🧱</span>'); }
+    if (urls.length) {
+      img.dataset.fallbacks = JSON.stringify(urls.slice(1));
+      img.src = urls[0];
+      return;
+    }
+
+    // Aucune texture en ligne ni locale : afficher le remplacement existant.
+    img.style.display = "none";
+    if (!img.parentElement.querySelector(".fallback")) {
+      img.insertAdjacentHTML("afterend", '<span class="fallback">🧱</span>');
+    }
   };
+
   function getCoords(item) {
     if (item.x != null && item.z != null) return {x:Number(item.x),z:Number(item.z)};
     if (item.coords && item.coords.x != null && item.coords.z != null) return {x:Number(item.coords.x),z:Number(item.coords.z)};
     return null;
   }
+
   const cabinetPositions = (() => {
     const p = {};
     // Pourcentages mesurés sur plan.png (2048 × 2048) : A5 en haut à droite,
@@ -107,17 +133,23 @@
     [33.0, 44.0, 55.0, 66.0].forEach((x, i) => p[`D${i+1}`] = {left:x, top:18.1, horizontal:true});
     return p;
   })();
-  function isComingSoon(item) { return item.cabinet === "" || (Array.isArray(item.cabinet) && item.cabinet.length === 1 && item.cabinet[0] === ""); }
+
+  function isComingSoon(item) {
+    return item.cabinet === "" || (Array.isArray(item.cabinet) && item.cabinet.length === 1 && item.cabinet[0] === "");
+  }
+
   function getCabinets(item) {
     if (Array.isArray(item.cabinet)) return item.cabinet.filter(Boolean).map(String);
     return item.cabinet ? [String(item.cabinet)] : [];
   }
+
   function renderMarkers() {
     markers.innerHTML = "";
     cabinetsLayer.innerHTML = "";
     const used = new Set(items.flatMap(getCabinets));
     const selectedItem = items.find(i => i.id === selectedId);
     const activeCabinets = new Set(selectedItem ? getCabinets(selectedItem) : []);
+
     Object.entries(cabinetPositions).forEach(([name, pos]) => {
       const b = document.createElement("button");
       b.className = "cabinet" + (pos.horizontal ? " horizontal" : "") + (activeCabinets.has(name) ? " active" : "");
@@ -126,6 +158,7 @@
       b.title = `Armoire ${name}`;
       b.setAttribute("aria-label", `Armoire ${name}`);
       b.innerHTML = `<span class="cabinet-label">${name}</span>`;
+
       b.addEventListener("click", () => {
         const first = items.find(i => getCabinets(i).includes(name));
         if (first) selectItem(first.id, false);
@@ -134,17 +167,24 @@
           b.classList.add("active");
         }
       });
+
       cabinetsLayer.appendChild(b);
     });
+
     $("#markerCount").textContent = `${used.size} armoires utilisées`;
   }
+
   function renderResults() {
     const q = slug(search.value.trim());
     const matches = items.filter(item => !q || slug([item.name,item.id,item.displayName,...(item.aliases || [])].join(" ")).includes(q))
       .sort((a,b) => Number(isComingSoon(a)) - Number(isComingSoon(b))).slice(0,100);
-    if (!matches.length) { results.innerHTML = '<div class="empty">Aucun item trouvé.<br>Vérifie son nom dans items.json.</div>'; return; }
+
+    if (!matches.length) {
+      results.innerHTML = '<div class="empty">Aucun item trouvé.<br>Vérifie son nom dans items.json.</div>';
+      return;
+    }
+
     results.innerHTML = matches.map(item => {
-      const c = getCoords(item);
       const comingSoon = isComingSoon(item);
       return `<button class="result ${item.id===selectedId?"selected":""} ${comingSoon?"coming-soon":""}" data-id="${esc(item.id)}">
         <span class="item-icon">${textureMarkup(item)}</span>
@@ -152,53 +192,66 @@
         ${comingSoon?"":`<span class="coords">${getCabinets(item).length ? `${esc(getCabinets(item).join(", "))}<br>Coffre ${esc(item.chest ?? "—")}` : "Sans armoire"}</span>`}
       </button>`;
     }).join("");
+
     results.querySelectorAll(".result").forEach(btn => btn.addEventListener("click",() => selectItem(btn.dataset.id,true)));
   }
+
   function selectItem(id, focusMap) {
     const item = items.find(x => x.id === id);
     if (!item) return;
+
     selectedId = id;
-    renderResults(); renderMarkers();
+    renderResults();
+    renderMarkers();
     const icon = textureMarkup(item);
+
     if (isComingSoon(item)) {
       $("#details").innerHTML = `<div class="details-top"><div class="item-icon">${icon}</div><div><h3>${esc(item.name || item.displayName || item.id)}</h3><p>${esc(item.id)}</p><span class="coming-badge">BIENTÔT DISPO</span></div></div>`;
       return;
     }
+
     $("#details").innerHTML = `<div class="details-top"><div class="item-icon">${icon}</div><div><h3>${esc(item.name || item.displayName || item.id)}</h3><p>${esc(item.id)}</p></div></div>
       <div class="coord-grid"><div class="coord"><label>Armoire${getCabinets(item).length > 1 ? "s" : ""}</label><strong>${esc(getCabinets(item).join(", ") || "—")}</strong></div><div class="coord"><label>Numéro du coffre</label><strong>${esc(item.chest ?? "—")}</strong></div></div>`;
+
     renderMarkers();
+
     if (focusMap && getCabinets(item).length) {
       const cabinet = [...cabinetsLayer.children].find(el => el.title === `Armoire ${getCabinets(item)[0]}`);
       if (cabinet) cabinet.focus({preventScroll:true});
     }
   }
+
   function normalizeData(data) {
     if (Array.isArray(data)) return {items:data,bounds:null};
     if (data && Array.isArray(data.items)) return {items:data.items,bounds:data.mapBounds || data.bounds || null};
     throw new Error("Le JSON doit être un tableau d’items ou un objet contenant items: [].");
   }
+
   async function init() {
     mapImage.addEventListener("error",() => {
       mapWrap.innerHTML = '<div style="padding:25px;color:#ffb4b4;text-align:center;line-height:1.5">Impossible de charger <b>plan.png</b>.<br>Place le fichier à côté de index.html.</div>';
     });
+
     try {
       const response = await fetch("items.json", {cache:"no-store"});
       if (!response.ok) throw new Error(`items.json introuvable (HTTP ${response.status})`);
       const parsed = normalizeData(await response.json());
       items = parsed.items.filter(item => item && item.id);
       $("#details").innerHTML = '<div class="status">Sélectionne un item pour voir son armoire et son coffre.</div>';
-      renderResults(); renderMarkers();
-
+      renderResults();
+      renderMarkers();
     } catch (error) {
       results.innerHTML = `<div class="empty status error">${esc(error.message)}<br><br>Place items.json à côté de index.html et lance la page via un serveur local.</div>`;
       $("#markerCount").textContent = "JSON indisponible";
     }
   }
+
   search.addEventListener("input",renderResults);
   mapImage.addEventListener("load",() => { renderMarkers(); });
   window.addEventListener("resize",renderMarkers);
   init();
 })();
 </script>
+
 </body>
 </html>
